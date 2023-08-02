@@ -1,0 +1,72 @@
+scn LootTrackerTryActivateQuest;	   Script Type: Object
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; Attempts to activate the loot quest if all conditions are met
+;
+; Called from:
+; - LootTrackerAddTarget
+; - LootTrackerHandleCombatEnd
+;=========================================================================
+
+Begin Function {}
+	PrintDebug "LootTrackerTryActivateQuest"
+
+	if eval playerref.IsInCombat && !(LootTracker.bForceActivateQuestInCombat)
+		Return
+	endif
+
+	; Remember the active quest to be suspended
+
+	Call LootTracker.RememberActiveQuest
+
+	; Activate the loot quest after some delay
+
+	if LootTracker.iForceActivateQuestDelaySec < 0
+		Return
+	endif
+
+	eval CallAfterSeconds LootTracker.iForceActivateQuestDelaySec (Begin Function {}
+
+		; https://geckwiki.com/index.php?title=GetGameLoaded
+		; "Returns 1 after a game is loaded on a per-script basis. For
+		; each script that calls GetGameLoaded, the command will return
+		; true exactly once each time the game is loaded and false
+		; thereafter."
+
+		if GetGameLoaded
+			
+			; The game has been reloaded since CallAfterSeconds was
+			; called, aborting
+
+			Return
+		endif
+
+		; Remember the active quest AGAIN if it changed in the meantime
+
+		Call LootTracker.RememberActiveQuest
+
+		if eval (!(player.IsInCombat) || LootTracker.bForceActivateQuestInCombat) && (ar_size (LootTracker.aObjectiveTargets)) > 0
+
+			; Switch to the loot quest if combat has finished
+	
+			ForceActiveQuest LootTracker
+		endif
+
+	End)
+End

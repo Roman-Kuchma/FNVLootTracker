@@ -1,0 +1,53 @@
+scn LootTrackerHandleControlDown;	   Script Type: Object
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; Called ONCE a button is PRESSED
+;
+; Param iControlCode
+;	Code of the pressed control
+;
+; NVSE "OnControlDown" event handler, set in:
+; - LootTrackerSetInputHandlers
+;
+; Removed in:
+; - LootTrackerRemoveInputHandlers
+;=========================================================================
+
+
+int iControlCode
+Begin Function { iControlCode }
+	PrintDebug "LootTrackerHandleControlDown " + $iControlCode
+	
+	; We are only interested in player input 5 ("Activate")
+
+	if iControlCode == 5
+		float fNow = GetTimePlayed 1
+		float fTimePassed = fNow - LootTracker.fLastActivateControlDownTimestamp
+		PrintDebug $fNow + " - " + $LootTracker.fLastActivateControlDownTimestamp + " = " + $fTimePassed
+
+		if eval GetActiveQuest == LootTracker && fTimePassed <= 0.5
+			MessageBoxExAlt (LootTracker.HandleContextActionChoice) "^Confirm^Remove:|In sight|All|Nothing"
+		else
+			Call LootTracker.RemoveTargetBase GetCrosshairRef
+		endif
+
+		LootTracker.fLastActivateControlDownTimestamp = fNow
+	endif
+
+End

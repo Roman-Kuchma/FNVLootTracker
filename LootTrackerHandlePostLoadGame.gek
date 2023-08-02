@@ -1,0 +1,76 @@
+scn LootTrackerHandlePostLoadGame;	 Script Type: Object
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; Quest objective targets don't seem to be reset between game loads.
+; This looks like a legit kind of game loading time speed up optimization:
+; if quest data is static and is not changed dynamically in (vanilla)
+; game, then why reload it?
+; For this very same reason objective targets are not included in the save
+; data - they are expected to exist in the static game files.
+; This fact and the fact that AddObjectiveTarget is not a vanilla function
+; mean that the state of the objectives that have targets dynamically
+; added/removed is not tracked/updated properly between game loads.
+;
+; Let's see an example:
+; 1) Actor A dies and gets added as an objective target dynamically using
+; AddObjectiveTarget
+; 2) The game is saved
+; 3) Actor B dies and gets added as an objective target dynamically using
+; AddObjectiveTarget
+; 4) The save from 2) is loaded
+; Now actor B is still alive, but it is still (or already?) an objective
+; target because the objective targets were not properly cleared after the
+; game loaded
+;
+; Unlike the static quest data, quest script variables are stored in the
+; save and reloaded with the game so we can save actual targets there and
+; reload objective targets on game load, basically manually synchronising
+; the saved targets with the quest targets
+; 
+; "With great power comes great responsibility"
+;
+; Param bOptionalSuccessfullyLoaded
+; 	Indicates if the game was loaded successfully (?)
+;
+; NVSE "OnPostLoadGame" event handler, set in:
+; - LootTrackerScript
+;=========================================================================
+
+short bOptionalSuccessfullyLoaded
+Begin Function { bOptionalSuccessfullyLoaded }
+	PrintDebug "LootTrackerHandlePostLoadGame " + $bOptionalSuccessfullyLoaded
+
+	Call LootTracker.LoadConfig
+
+	; Remove all targets
+
+	while (Ar_Size (GetObjectiveTargets LootTracker 10)) > 0
+		RemoveObjectiveTarget LootTracker 10 ((GetObjectiveTargets LootTracker 10)[0])
+	loop
+
+	; Load quest targets from the saved array
+
+	array_var aObjectiveTargetsIt
+	if LootTracker.aObjectiveTargets
+		foreach aObjectiveTargetsIt <- LootTracker.aObjectiveTargets
+			Call LootTracker.AddTarget aObjectiveTargetsIt["value"]
+		loop
+	endif
+
+End

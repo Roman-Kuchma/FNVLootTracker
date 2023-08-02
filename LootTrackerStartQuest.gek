@@ -1,0 +1,52 @@
+scn LootTrackerStartQuest;			   Script Type: Object
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; Starts the quest. Called after the first target is added.
+;
+; Called from:
+; - LootTrackerAddTarget
+;=========================================================================
+
+Begin Function {}
+	PrintDebug "LootTrackerStart"
+
+	if GetQuestRunning LootTracker != 1
+
+		; If the loot quest is not running, then start it.
+		; StartQuest resets all quest values to 0, so don't call it if the
+		; quest is already running.
+
+		StartQuest LootTracker
+	endif
+
+	LootTracker.aObjectiveTargets = Ar_Construct "array"
+
+	if GetStage LootTracker != 10
+
+		; Set the correct quest stage
+
+		PrintDebug "SetStage LootTracker 10"
+		SetStage LootTracker 10
+	endif
+
+	; Mark the objective as not completed and display it in Pip-boy
+
+	SetObjectiveCompleted LootTracker 10 0
+	SetObjectiveDisplayed LootTracker 10 1
+End

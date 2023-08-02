@@ -1,0 +1,49 @@
+scn LootTrackerCheckCanTrackSpecies;   Script Type: Object
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; Checks if the actor's species is configured to be tracked or not
+;
+; Param rTarget
+;	Actor to check
+; Returns
+;	1 if the target species is configured to be tracked, 0 otherwise
+;
+; Called from:
+; - LootTrackerAddTarget
+;=========================================================================
+
+ref rTarget
+Begin Function { rTarget }
+
+	if rTarget.GetIsCreature
+
+		SetFunctionValue eval(	(rTarget.GetIsCreatureType 0 && LootTracker.bTrackAnimals)		||
+								(rTarget.GetIsCreatureType 1 && LootTracker.bTrackMutatedAnimals)||
+								(rTarget.GetIsCreatureType 2 && LootTracker.bTrackMutatedInsects)||
+								(rTarget.GetIsCreatureType 3 && LootTracker.bTrackAbominations)	||
+								(rTarget.GetIsCreatureType 4 && LootTracker.bTrackSuperMutants)	||
+								(rTarget.GetIsCreatureType 5 && LootTracker.bTrackFeralGhouls)	||
+								(rTarget.GetIsCreatureType 6 && LootTracker.bTrackRobots)
+							 )
+		
+	else
+		SetFunctionValue LootTracker.bTrackHumans
+	endif
+
+End

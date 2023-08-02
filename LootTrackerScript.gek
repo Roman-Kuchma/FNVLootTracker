@@ -1,0 +1,109 @@
+scn LootTrackerScript;			   	   Script Type: Quest
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; The main script attached to LootTracker quest
+;=========================================================================
+
+array_var aObjectiveTargets
+ref rSuspendedQuest
+float fLastActivateControlDownTimestamp
+
+; Config parameters
+
+int		iForceActivateQuestDelaySec
+short	bForceActivateQuestInCombat
+float	fContextActionInputThresholdSec
+short	bTrackHumans
+short	bTrackAbominations
+short	bTrackAnimals
+short	bTrackFeralGhouls
+short	bTrackMutatedAnimals
+short	bTrackMutatedInsects
+short	bTrackRobots
+short	bTrackSuperMutants
+
+;=========================================================================
+; Dynamically (runtime) injected dependencies to:
+; 1) Avoid script static (compilation) errors due to missing scripts
+; 2) Simplify refactoring and testing: new script needs to be replaced
+; only here instead of all the places where it's used
+;
+; As a result, if this script is imported first in G.E.C.K., the order of
+; importing the rest of the scripts doesn't matter and there will be no
+; compilation errors due to missing scripts as soon as these holders are
+; actually used instead of actual scripts.
+;
+; No, this is not a service locator. Formally, only the quest can be
+; considererd an object in the mod. The rest are merely UD functions, and
+; here we actually statically declare all the needed dependencies.
+;=========================================================================
+
+ref AddTarget
+ref CheckCanTrackSpecies
+ref FindClosestToCrosshair
+ref FinishQuest
+ref GetDistanceToCrosshair
+ref HandleCombatEnd
+ref HandleContextActionChoice
+ref HandleControlDown
+ref HandleDeath
+ref HandlePostLoadGame
+ref LoadConfig
+ref RememberActiveQuest
+ref RemoveAllTargets
+ref RemoveInputHandlers
+ref RemoveTargetBase
+ref RemoveTargetInSight
+ref SetInputHandlers
+ref StartTheQuest
+ref TryActivateQuest
+
+Begin Function {}
+	
+	if GetGameLoaded
+
+		; Injecting dependencies
+
+		AddTarget					= EditorIDToFormID "LootTrackerAddTarget"
+		CheckCanTrackSpecies		= EditorIDToFormID "LootTrackerCheckCanTrackSpecies"
+		FindClosestToCrosshair		= EditorIDToFormID "LootTrackerFindClosestToCrosshair"
+		FinishQuest					= EditorIDToFormID "LootTrackerFinishQuest"
+		GetDistanceToCrosshair		= EditorIDToFormID "LootTrackerGetDistanceToCrosshair"
+		HandleCombatEnd				= EditorIDToFormID "LootTrackerHandleCombatEnd"
+		HandleContextActionChoice	= EditorIDToFormID "LootTrackerHandleContextActionChoice"
+		HandleControlDown			= EditorIDToFormID "LootTrackerHandleControlDown"
+		HandleDeath					= EditorIDToFormID "LootTrackerHandleDeath"
+		HandlePostLoadGame			= EditorIDToFormID "LootTrackerHandlePostLoadGame"
+		LoadConfig					= EditorIDToFormID "LootTrackerLoadConfig"
+		RememberActiveQuest			= EditorIDToFormID "LootTrackerRememberActiveQuest"
+		RemoveAllTargets			= EditorIDToFormID "LootTrackerRemoveAllTargets"
+		RemoveInputHandlers			= EditorIDToFormID "LootTrackerRemoveInputHandlers"
+		RemoveTargetBase			= EditorIDToFormID "LootTrackerRemoveTargetBase"
+		RemoveTargetInSight			= EditorIDToFormID "LootTrackerRemoveTargetInSight"
+		SetInputHandlers			= EditorIDToFormID "LootTrackerSetInputHandlers"
+		StartTheQuest				= EditorIDToFormID "LootTrackerStartQuest"
+		TryActivateQuest			= EditorIDToFormID "LootTrackerTryActivateQuest"
+
+		SetEventHandler "PostLoadGame" HandlePostLoadGame
+		SetEventHandler "NewGame" HandlePostLoadGame
+		SetEventHandler "OnDeath" HandleDeath
+		SetEventHandler "OnCombatEnd" HandleCombatEnd
+	endif
+
+End

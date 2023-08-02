@@ -1,0 +1,64 @@
+scn LootTrackerFindClosestToCrosshair; Script Type: Object
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; Finds the target in sight closest to the crosshair
+;
+; Param aTargets
+;	Array of actors to test
+; Returns
+;	The actor with screen coordinates closest to the center
+;
+; Called from:
+; - LootTrackerRemoveTargetInSight
+;=========================================================================
+
+
+array_var aTargets
+Begin Function { aTargets }
+	PrintDebug "LootTrackerFindClosestToCrosshair " + $aTargets
+
+	if eval !(aTargets) || (Ar_Size aTargets) < 1
+		Return
+	endif
+	
+	float fClosestDistance = -1
+	ref rClosestTarget
+
+	array_var aTargetsIt
+	ForEach aTargetsIt <- aTargets
+		ref rTarget = aTargetsIt["value"]
+		
+		; -1 if the target is not on screen
+		float fTargetDistance := Call LootTracker.GetDistanceToCrosshair rTarget
+
+		if fTargetDistance == -1
+			PrintDebug $rTarget + " " + (getFormIDString rTarget) + " is offscreen"
+		else
+			PrintDebug $rTarget + " " + (getFormIDString rTarget) + " is " + $fTargetDistance + "px from the crosshair"
+		endif
+
+		if eval fClosestDistance == -1 || (fTargetDistance >= 0 && fTargetDistance < fClosestDistance)
+			fClosestDistance = fTargetDistance
+			rClosestTarget = rTarget
+		endif
+
+	Loop
+
+	SetFunctionValue rClosestTarget
+End

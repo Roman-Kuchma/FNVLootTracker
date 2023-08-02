@@ -1,0 +1,63 @@
+scn LootTrackerRemoveTargetBase;	   Script Type: Object
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; Removes the target from the quest and finishes it if needed
+;
+; Param rTarget
+; 	Target to remove from the objective
+;
+; Called from:
+; - LootTrackerHandleControlDown
+; - LootTrackerRemoveAllTargets
+; - LootTrackerRemoveTargetInSight
+;=========================================================================
+
+ref rTarget
+Begin Function { rTarget }
+	PrintDebug "LootTrackerRemoveTargetBase " + $rTarget
+
+	; Remove the target from the objective
+
+	while eval (Ar_Find rTarget LootTracker.aObjectiveTargets) != Ar_BadNumericIndex
+		Ar_Erase LootTracker.aObjectiveTargets (Ar_Find rTarget LootTracker.aObjectiveTargets)
+	loop
+
+	RemoveObjectiveTarget LootTracker 10 rTarget
+
+	; If there is no more targets
+
+	if eval (Ar_Size LootTracker.aObjectiveTargets) == 0
+
+		; Remove the input handlers
+
+		Call LootTracker.RemoveInputHandlers
+
+		; Finish the quest
+
+		SetObjectiveCompleted LootTracker 10 1
+
+		; Continue the suspended quest
+
+		if eval LootTracker.rSuspendedQuest && !(GetQuestCompleted (LootTracker.rSuspendedQuest))
+			ForceActiveQuest (LootTracker.rSuspendedQuest)
+		endif
+
+	endif
+
+End

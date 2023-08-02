@@ -1,0 +1,58 @@
+scn LootTrackerGetDistanceToCrosshair; Script Type: Object
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; A bit of basic gamedev linear algebra transform magic to get the
+; distance between the target screen position and the crosshair
+;
+; Param rTarget
+;	Actor to calculate the distance for
+; Returns
+;	Distance (in pixels) from the actor screen position to the crosshair.
+;	-1 if the actor is offscreen.
+;
+; Called from:
+; - LootTrackerFindClosestToCrosshair
+;=========================================================================
+
+
+ref rTarget
+Begin Function { rTarget }
+
+	; Get the world position of the target
+
+	float fWorldX
+	float fWorldY
+	float fWorldZ
+	rTarget.GetPosEx fWorldX fWorldY fWorldZ
+	
+	; Transform the world position to screen position
+
+	float fScreenX
+	float fScreenY
+	float fScreenZ; Depth
+	; 0 is for "Offscreen coordinates given as a square shape"
+	short bIsOnScreen := WorldToScreen fScreenX fScreenY fScreenZ fWorldX fWorldY fWorldZ 0
+
+	if bIsOnScreen != -1
+		SetFunctionValue V3Length ((fScreenX - 0.5) * (GetNumericINISetting "iSize W:Display")) ((fScreenY - 0.5) * (GetNumericINISetting "iSize H:Display")) 0
+	else
+		SetFunctionValue -1
+	endif
+
+End
