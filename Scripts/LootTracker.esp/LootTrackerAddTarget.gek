@@ -40,7 +40,7 @@ Begin Function { rTarget }
 
 		; Check if the target is configured to be tracked and add it.
 
-		if Call LootTracker.CheckCanTrackSpecies rTarget
+		if eval (Call LootTracker.CheckCanTrackSpecies rTarget) || (Call LootTracker.CheckCanTrackItems rTarget)
 
 			if eval (Ar_Size LootTracker.aObjectiveTargets) < 1
 

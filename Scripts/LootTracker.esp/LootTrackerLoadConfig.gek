@@ -39,6 +39,21 @@ Begin Function {}
 	LootTracker.bTrackRobots = 1
 	LootTracker.bTrackSuperMutants = 1
 
+	LootTracker.bTrackArmor = 1
+	LootTracker.bTrackBooks = 1
+	LootTracker.bTrackMisc = 1
+	LootTracker.bTrackWeapons = 1
+	LootTracker.bTrackAmmo = 1
+	LootTracker.bTrackKeys = 1
+	LootTracker.bTrackIngestible = 1
+	LootTracker.bTrackNotes = 1
+	LootTracker.bTrackWeaponMods = 1
+	LootTracker.bTrackCasinoChips = 1
+	LootTracker.bTrackCaravanCards = 1
+	LootTracker.bTrackFactionCurrencies = 1
+
+	LootTracker.iTrackMinTotalBaseValue = 0
+
 	string_var sCfgFileName = $("LootTracker " + $(playerref) + ".ini")
 
 	if FileExists ("Config\" + $sCfgFileName)
@@ -54,14 +69,29 @@ Begin Function {}
 		
 		; Filters
 
-		LootTracker.bTrackHumans		= #(GetINIFloat "Filters:bTrackHumans"			$sCfgFileName)
-		LootTracker.bTrackAbominations	= #(GetINIFloat "Filters:bTrackAbominations"	$sCfgFileName)
-		LootTracker.bTrackAnimals		= #(GetINIFloat "Filters:bTrackAnimals"			$sCfgFileName)
-		LootTracker.bTrackFeralGhouls	= #(GetINIFloat "Filters:bTrackFeralGhouls"		$sCfgFileName)
-		LootTracker.bTrackMutatedAnimals= #(GetINIFloat "Filters:bTrackMutatedAnimals"	$sCfgFileName)
-		LootTracker.bTrackMutatedInsects= #(GetINIFloat "Filters:bTrackMutatedInsects"	$sCfgFileName)
-		LootTracker.bTrackRobots		= #(GetINIFloat "Filters:bTrackRobots"			$sCfgFileName)
-		LootTracker.bTrackSuperMutants	= #(GetINIFloat "Filters:bTrackSuperMutants"	$sCfgFileName)
+		LootTracker.bTrackHumans			= #(GetINIFloat "Filters:bTrackHumans"				$sCfgFileName)
+		LootTracker.bTrackAbominations		= #(GetINIFloat "Filters:bTrackAbominations"		$sCfgFileName)
+		LootTracker.bTrackAnimals			= #(GetINIFloat "Filters:bTrackAnimals"				$sCfgFileName)
+		LootTracker.bTrackFeralGhouls		= #(GetINIFloat "Filters:bTrackFeralGhouls"			$sCfgFileName)
+		LootTracker.bTrackMutatedAnimals	= #(GetINIFloat "Filters:bTrackMutatedAnimals"		$sCfgFileName)
+		LootTracker.bTrackMutatedInsects	= #(GetINIFloat "Filters:bTrackMutatedInsects"		$sCfgFileName)
+		LootTracker.bTrackRobots			= #(GetINIFloat "Filters:bTrackRobots"				$sCfgFileName)
+		LootTracker.bTrackSuperMutants		= #(GetINIFloat "Filters:bTrackSuperMutants"		$sCfgFileName)
+
+		LootTracker.bTrackArmor				= #(GetINIFloat "Filters:bTrackArmor"				$sCfgFileName)
+		LootTracker.bTrackBooks				= #(GetINIFloat "Filters:bTrackBooks"				$sCfgFileName)
+		LootTracker.bTrackMisc				= #(GetINIFloat "Filters:bTrackMisc"				$sCfgFileName)
+		LootTracker.bTrackWeapons			= #(GetINIFloat "Filters:bTrackWeapons"				$sCfgFileName)
+		LootTracker.bTrackAmmo				= #(GetINIFloat "Filters:bTrackAmmo"				$sCfgFileName)
+		LootTracker.bTrackKeys				= #(GetINIFloat	"Filters:bTrackKeys"				$sCfgFileName)
+		LootTracker.bTrackIngestible		= #(GetINIFloat "Filters:bTrackIngestible"			$sCfgFileName)
+		LootTracker.bTrackNotes				= #(GetINIFloat "Filters:bTrackNotes"				$sCfgFileName)
+		LootTracker.bTrackWeaponMods		= #(GetINIFloat "Filters:bTrackWeaponMods"			$sCfgFileName)
+		LootTracker.bTrackCasinoChips		= #(GetINIFloat "Filters:bTrackCasinoChips"			$sCfgFileName)
+		LootTracker.bTrackCaravanCards		= #(GetINIFloat "Filters:bTrackCaravanCards"		$sCfgFileName)
+		LootTracker.bTrackFactionCurrencies	= #(GetINIFloat "Filters:bTrackFactionCurrencies"	$sCfgFileName)
+	
+		LootTracker.iTrackMinTotalBaseValue	= #(GetINIFloat "Filters.iTrackMinTotalBaseValue"	$sCfgFileName)
 		
 		PrintDebug sCfgFileName + " loaded"
 		

@@ -1,0 +1,84 @@
+scn LootTrackerCheckCanTrackItems;	   Script Type: Object
+
+;=========================================================================
+; Copyright 2023 Roman Kuchma
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+;=========================================================================
+
+;=========================================================================
+; Checks if actor inventory items satisfy:
+; 1) Type filter
+; 2) Total value filter
+;
+; Param rTarget
+;	Owner of the inventory being checked
+;
+; Returns
+;	1 if actor's inventory satisfies the filters, 0 otherwise
+;=========================================================================
+
+ref rTarget
+Begin Function { rTarget }
+	PrintDebug "LootTrackerCheckCanTrackItems"
+
+	SetFunctionValue 0
+
+	short bTypeFilterResult = 0
+	int iTotalBaseValue = 0
+
+	array_var aInventory = rTarget.GetAllItems
+	if eval (Ar_Size aInventory) > 0
+		array_var aInventoryIt
+		ForEach aInventoryIt <- aInventory
+			ref rItem = aInventoryIt["value"]
+			int iType = rItem.GetObjectType
+			
+			; There are only 12 item types usable in inventories
+
+			if iType == 24
+				bTypeFilterResult = LootTracker.bTrackArmor
+			elseif iType == 25
+				bTypeFilterResult = LootTracker.bTrackBooks
+			elseif iType == 31
+				bTypeFilterResult = LootTracker.bTrackMisc
+			elseif iType == 40
+				bTypeFilterResult = LootTracker.bTrackWeapons
+			elseif iType == 41
+				bTypeFilterResult = LootTracker.bTrackAmmo
+			elseif iType == 46
+				bTypeFilterResult = LootTracker.bTrackKeys
+			elseif iType == 47
+				bTypeFilterResult = LootTracker.bTrackIngestible
+			elseif iType == 49							
+				bTypeFilterResult = LootTracker.bTrackNotes
+			elseif iType == 103
+				bTypeFilterResult = LootTracker.bTrackWeaponMods
+			elseif iType == 108
+				bTypeFilterResult = LootTracker.bTrackCasinoChips
+			elseif iType == 115
+				bTypeFilterResult = LootTracker.bTrackCaravanCards
+			elseif iType == 116
+				bTypeFilterResult = LootTracker.bTrackFactionCurrencies
+			endif
+
+			iTotalBaseValue += rItem.GetValueAlt
+
+			if eval bTypeFilterResult && iTotalBaseValue >= LootTracker.iTrackMinTotalBaseValue
+				SetFunctionValue 1
+				Break
+			endif
+		Loop
+	endif
+
+End

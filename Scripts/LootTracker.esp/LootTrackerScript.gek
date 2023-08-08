@@ -29,6 +29,7 @@ float fLastActivateControlDownTimestamp
 int		iForceActivateQuestDelaySec
 short	bForceActivateQuestInCombat
 float	fContextActionInputThresholdSec
+
 short	bTrackHumans
 short	bTrackAbominations
 short	bTrackAnimals
@@ -37,6 +38,21 @@ short	bTrackMutatedAnimals
 short	bTrackMutatedInsects
 short	bTrackRobots
 short	bTrackSuperMutants
+
+short	bTrackArmor
+short	bTrackBooks
+short	bTrackMisc
+short	bTrackWeapons
+short	bTrackAmmo
+short	bTrackKeys
+short	bTrackIngestible
+short	bTrackNotes
+short	bTrackWeaponMods
+short	bTrackCasinoChips
+short	bTrackCaravanCards
+short	bTrackFactionCurrencies
+
+int		iTrackMinTotalBaseValue
 
 ;=========================================================================
 ; Dynamically (runtime) injected dependencies to:
@@ -56,6 +72,7 @@ short	bTrackSuperMutants
 
 ref AddTarget
 ref CheckCanTrackSpecies
+ref CheckCanTrackItems
 ref FindClosestToCrosshair
 ref FinishQuest
 ref GetDistanceToCrosshair
@@ -82,6 +99,7 @@ Begin Function {}
 
 		AddTarget					= EditorIDToFormID "LootTrackerAddTarget"
 		CheckCanTrackSpecies		= EditorIDToFormID "LootTrackerCheckCanTrackSpecies"
+		CheckCanTrackItems			= EditorIDToFormID "LootTrackerCheckCanTrackItems"
 		FindClosestToCrosshair		= EditorIDToFormID "LootTrackerFindClosestToCrosshair"
 		FinishQuest					= EditorIDToFormID "LootTrackerFinishQuest"
 		GetDistanceToCrosshair		= EditorIDToFormID "LootTrackerGetDistanceToCrosshair"
